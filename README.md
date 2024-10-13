@@ -80,3 +80,6 @@ Goal: Provide the master admin with tools to analyze and manage the platform.
   _ Sales analytics.
   _ User statistics. \* Product performance. 2. Implement report generation for admins (e.g., export sales data). 3. Set up logging and error monitoring for admins to monitor app stability.
   Outcome: Full admin control and analytics tools available for managing the app.
+
+Notes for reminders:
+![alt text](image.png)
