@@ -1,8 +1,14 @@
 import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { PrismaClient } from "@prisma/client";
+import { compare } from "bcryptjs";
 import type { NextAuthOptions } from "next-auth";
 
+const prisma = new PrismaClient();
+
 export const authOptions: NextAuthOptions = {
+  adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -15,29 +21,40 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        // Add your own logic here to find the user and validate the credentials
-        // This is just a placeholder example:
-        if (
-          credentials?.email === "user@example.com" &&
-          credentials?.password === "password"
-        ) {
-          return { id: "1", name: "J Smith", email: "jsmith@example.com" };
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Missing username or password");
         }
-        // If you return null then an error will be displayed advising the user to check their details.
-        return null;
+        const user = await prisma.user.findUnique({
+          where: {
+            email: credentials.email,
+          },
+        });
+        if (!user || !(await compare(credentials.password, user.password))) {
+          throw new Error("Invalid username or password");
+        }
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+        };
       },
     }),
   ],
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.email = user.email;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
+        session.user.email = token.email as string;
       }
       return session;
     },
@@ -46,9 +63,6 @@ export const authOptions: NextAuthOptions = {
     signIn: "/auth/login",
   },
   secret: process.env.NEXTAUTH_SECRET,
-  session: {
-    strategy: "jwt",
-  },
 };
 
 const handler = NextAuth(authOptions);
