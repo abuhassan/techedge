@@ -1,32 +1,27 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import Link from 'next/link'
 
-interface PaginationProps {
-  currentPage: number;
-  totalPages: number;
-  createPageUrl: (page: number) => string;
+export interface PaginationProps {
+  currentPage: number
+  totalPages: number
+  baseUrl: string
 }
 
-export default function Pagination({
-  currentPage,
-  totalPages,
-  createPageUrl,
-}: PaginationProps) {
+export default function Pagination({ currentPage, totalPages, baseUrl }: PaginationProps) {
   return (
-    <div className="flex justify-center items-center space-x-2 mt-8">
-      <Link href={createPageUrl(currentPage - 1)} passHref>
-        <Button disabled={currentPage === 1} variant="outline">
+    <div className="flex justify-center space-x-2">
+      {currentPage > 1 && (
+        <Link href={`/products?page=${currentPage - 1}`} className="px-4 py-2 bg-blue-500 text-white rounded">
           Previous
-        </Button>
-      </Link>
-      <span className="text-sm font-medium">
+        </Link>
+      )}
+      <span className="px-4 py-2 bg-gray-200 rounded">
         Page {currentPage} of {totalPages}
       </span>
-      <Link href={createPageUrl(currentPage + 1)} passHref>
-        <Button disabled={currentPage === totalPages} variant="outline">
+      {currentPage < totalPages && (
+        <Link href={`/products?page=${currentPage + 1}`} className="px-4 py-2 bg-blue-500 text-white rounded">
           Next
-        </Button>
-      </Link>
+        </Link>
+      )}
     </div>
-  );
+  )
 }

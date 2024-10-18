@@ -4,7 +4,7 @@ import { Metadata } from "next";
 import ProductCard from "../.././components/ProductCard";
 import { Product } from "@/types/product";
 import LoadingSpinner from "../../components/LoadingSpinner";
-import Pagination from "../../components/Pagination";
+import Pagination, { PaginationProps } from "@/components/Pagination"; // adjust the import path as needed
 
 // Define CategoryId type
 type CategoryId = string;
@@ -124,7 +124,7 @@ async function ProductList({
       <Pagination
         currentPage={page}
         totalPages={Math.ceil(total / limit)}
-        createPageUrl={(page) => `/categories/${categoryId}?page=${page}`}
+        baseUrl={`/categories/${categoryId}`}
       />
     </>
   );
@@ -134,7 +134,7 @@ export default async function CategoryPage({
   params,
   searchParams,
 }: {
-  params: { categoryId: CategoryId };
+  params: { categoryId: string };
   searchParams: { page?: string };
 }) {
   const categoryId = params.categoryId;
