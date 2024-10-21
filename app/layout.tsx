@@ -10,7 +10,11 @@ export const metadata = {
   description: "High-tech Kitchenware Store",
 };
 
-export default function layout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en" className="h-full">
       <body className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900">
